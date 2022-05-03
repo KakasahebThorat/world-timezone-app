@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7124fff9-24e4-4076-b07f-bcf25c090a6d" basePath="/timezone">
+		<http:listener-connection host="0.0.0.0" port="8086" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="3369b508-2819-434e-a2cd-457fd6a65ae5" basePath="/api/timezone/" >
+		<http:request-connection host="worldtimeapi.org" usePersistentConnections="false"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="05d1425d-089a-4a28-bb43-d7e6d91e155f" basePath="/api/timezone" >
+		<http:request-connection host="worldtimeapi.org" />
+	</http:request-config>
+	<flow name="world-demo-apiFlow" doc:id="b4b42c5a-7076-4578-be86-339386beb723" >
+		<http:listener doc:name="Listener" doc:id="e7d06d08-3e22-44b4-a14f-7e875072f6c6" config-ref="HTTP_Listener_config" path="/{region}/{city}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="35a9af10-4706-4047-85f4-454fbc3cf8cb" message="flow started"/>
+		<http:request method="GET" doc:name="Request" doc:id="08ecf156-c7a9-4858-b63c-b9c483a73a13" config-ref="HTTP_Request_configuration1" path="/{region}/{city}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	city : attributes.uriParams.city,
+	region : attributes.uriParams.region
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="ea95791e-ca14-4b5a-8ea1-c1cb97ca09f2" message="flow end"/>
+	</flow>
+</mule>
